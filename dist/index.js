@@ -14,12 +14,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const routes_1 = require("./routes/routes");
+const mongoose_1 = __importDefault(require("mongoose"));
 const app = (0, express_1.default)();
 const { PORT = 3000 } = process.env;
+mongoose_1.default.set('strictQuery', false);
 app.use(routes_1.pagesRouter);
 function start() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            yield mongoose_1.default.connect('mongodb://127.0.0.1:27017/kspdb');
             app.listen(PORT, () => {
                 console.log(`Server has been started on port ${PORT} !`);
             });
