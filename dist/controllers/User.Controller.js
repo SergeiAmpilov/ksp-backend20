@@ -33,19 +33,20 @@ class UserController {
     loginUser(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = req.body;
-            const userFromDb = yield user_1.userModel.findByEmail(user.email);
-            const resLogin = yield bcrypt_1.default.compare(user.password, userFromDb.password);
-            if (resLogin) {
-                const token = jsonwebtoken_1.default.sign({ _id: userFromDb._id }, JWT_SECRET, { expiresIn: '7d' });
-                res.cookie('jwt', token, {
-                    maxAge: 3600000 * 24 * 7,
-                    httpOnly: true,
-                })
-                    .send({ jwt: token });
+            const userFromDb = yield user_1.userModel.findOne({ email: user.email }).select('+password');
+            if (userFromDb) {
+                const resLogin = yield bcrypt_1.default.compare(user.password, userFromDb.password);
+                if (resLogin) {
+                    const token = jsonwebtoken_1.default.sign({ _id: userFromDb._id }, JWT_SECRET, { expiresIn: '7d' });
+                    res.cookie('jwt', token, {
+                        maxAge: 3600000 * 24 * 7,
+                        httpOnly: true,
+                    })
+                        .send({ jwt: token });
+                    return;
+                }
             }
-            else {
-                res.status(401).send({ message: 'wrong email or password' });
-            }
+            res.status(401).send({ message: 'wrong email or password' });
         });
     }
 }

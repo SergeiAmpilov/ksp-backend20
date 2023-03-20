@@ -29,24 +29,27 @@ export class UserController {
   public async loginUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     const user: UserLoginDto = req.body;
 
-    // @ts-ignore
-    const userFromDb = await userModel.findByEmail(user.email);
-    const resLogin = await bcrypt.compare(user.password, userFromDb.password);
+    
+    const userFromDb = await userModel.findOne({ email: user.email}).select('+password');
+    if (userFromDb) {
+      const resLogin = await bcrypt.compare(user.password, userFromDb.password);
 
-    if (resLogin) {
-      const token = jwt.sign({ _id: userFromDb._id }, JWT_SECRET, { expiresIn: '7d' });
-
-      res.cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        // SameSite: true,
-      })
-      .send({ jwt: token });
-
-    } else {
-      res.status(401).send({message: 'wrong email or password'});
+      if (resLogin) {
+        const token = jwt.sign({ _id: userFromDb._id }, JWT_SECRET, { expiresIn: '7d' });
+  
+        res.cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          // SameSite: true,
+        })
+        .send({ jwt: token });
+        return ;
+  
+      }
+      
     }
-    // 2. compare password
-    // 3. generate jwt and send it
+    
+    res.status(401).send({message: 'wrong email or password'});
+
   }
 }

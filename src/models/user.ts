@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import isEmail from 'validator/lib/isEmail';
 
 
-const userSchema = new mongoose.Schema({
+export const userSchema = new mongoose.Schema({
   name: {
     type: String,
     minlength: [2, 'Too short Name. Must be at least 2, got {VALUE}'],
@@ -22,12 +22,4 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findByEmail = async function (email: string) {
-  const userFromDb = await this.findOne({ email }).select('+password');
-  return userFromDb;
-}
-
-const userModel = mongoose.model('user', userSchema);
-
-
-export { userSchema, userModel };
+export const userModel = mongoose.model('user', userSchema);
