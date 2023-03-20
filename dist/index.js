@@ -39,12 +39,15 @@ const express_1 = __importDefault(require("express"));
 const routes_1 = require("./routes/routes");
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv = __importStar(require("dotenv"));
+const body_parser_1 = __importDefault(require("body-parser"));
 dotenv.config();
 const app = (0, express_1.default)();
 const { PORT = 3000 } = process.env;
 const { DB_HOST = '127.0.0.1' } = process.env;
 const { DB_PORT = '27017' } = process.env;
 const { DB_NAME = 'kspdb' } = process.env;
+app.use(body_parser_1.default.json());
+app.use(body_parser_1.default.urlencoded({ extended: true }));
 mongoose_1.default.set('strictQuery', false);
 app.use(routes_1.pagesRouter);
 function start() {

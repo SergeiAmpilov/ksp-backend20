@@ -2,6 +2,7 @@ import express from 'express';
 import { pagesRouter } from './routes/routes';
 import mongoose from 'mongoose';
 import * as dotenv from 'dotenv'
+import bodyParser from 'body-parser';
 
 
 dotenv.config();
@@ -12,6 +13,9 @@ const {PORT = 3000} =  process.env;
 const { DB_HOST = '127.0.0.1' } = process.env;
 const { DB_PORT = '27017' } = process.env;
 const { DB_NAME = 'kspdb' } = process.env;
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.set('strictQuery', false);
 

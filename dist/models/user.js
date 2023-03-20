@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.userModel = exports.userSchema = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const isEmail_1 = __importDefault(require("validator/lib/isEmail"));
 const userSchema = new mongoose_1.default.Schema({
@@ -10,6 +11,7 @@ const userSchema = new mongoose_1.default.Schema({
         type: String,
         minlength: [2, 'Too short Name. Must be at least 2, got {VALUE}'],
         maxlength: [30, 'Too long Name. Must be max 30, got {VALUE}'],
+        required: [true, 'Name is required'],
     },
     email: {
         type: String,
@@ -23,3 +25,6 @@ const userSchema = new mongoose_1.default.Schema({
         select: false,
     },
 });
+exports.userSchema = userSchema;
+const userModel = mongoose_1.default.model('user', userSchema);
+exports.userModel = userModel;
