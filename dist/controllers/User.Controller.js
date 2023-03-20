@@ -15,7 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const user_1 = require("../models/user");
-const { SALT = 10 } = process.env;
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const { SALT = 10, JWT_SECRET = 'some-secret-key' } = process.env;
 class UserController {
     createUser(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -26,6 +27,25 @@ class UserController {
             res.status(201).send({ user: {
                     email: newUser.email
                 } });
+        });
+    }
+    ;
+    loginUser(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = req.body;
+            const userFromDb = yield user_1.userModel.findByEmail(user.email);
+            const resLogin = yield bcrypt_1.default.compare(user.password, userFromDb.password);
+            if (resLogin) {
+                const token = jsonwebtoken_1.default.sign({ _id: userFromDb._id }, JWT_SECRET, { expiresIn: '7d' });
+                res.cookie('jwt', token, {
+                    maxAge: 3600000 * 24 * 7,
+                    httpOnly: true,
+                })
+                    .send({ jwt: token });
+            }
+            else {
+                res.status(401).send({ message: 'wrong email or password' });
+            }
         });
     }
 }

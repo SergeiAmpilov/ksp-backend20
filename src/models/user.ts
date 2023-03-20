@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+userSchema.statics.findByEmail = async function (email: string) {
+  const userFromDb = await this.findOne({ email }).select('+password');
+  return userFromDb;
+}
+
 const userModel = mongoose.model('user', userSchema);
 
 
